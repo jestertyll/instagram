@@ -261,3 +261,73 @@ body.keyboard-is-open .create-account-container,
 body.keyboard-is-open .meta-pic {
     display: none !important;
 }
+
+/* --- CUSTOM MODAL STYLES --- */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65); /* Dark dim background */
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-box {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 310px; /* Standard mobile alert width */
+    border-radius: 14px;
+    text-align: center;
+    overflow: hidden;
+    animation: popIn 0.2s ease-out;
+}
+
+.modal-content {
+    padding: 20px  20px 16px;
+}
+
+.modal-content p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 16px; /* Exact size for alert text */
+    color: #000000;
+    font-weight: bold; /* Medium weight */
+    margin-top: 10px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-btn {
+    background: transparent;
+    border: none;
+    border-top: 1px solid #dbdbdb; /* The grey divider line */
+    padding: 12px;
+    font-size: 16px;
+    color: #0064e0; /* Instagram Blue */
+    cursor: pointer;
+    width: 100%;
+}
+
+.modal-btn:active {
+    background-color: #abe1f5;
+}
+
+/* Specific tweak for the second button to match screenshot */
+#modalCreateBtn {
+    font-weight: 400; /* Regular weight for Create Account */
+}
+
+@keyframes popIn {
+    from { transform: scale(1.1); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
