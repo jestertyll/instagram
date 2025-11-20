@@ -201,25 +201,43 @@
         });
     }
 
-    // --- Advanced Keyboard Detection (visualViewport) ---
-    
-    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
-    
+    // --- ROBUST KEYBOARD DETECTION ---
+
+    // 1. Capture the screen height IMMEDIATELY on load.
+    // This 'locks' the value before the address bar or keyboard moves things around.
+    let initialHeight = window.innerHeight;
+
+    // 2. Handle screen rotation (optional but good for stability)
+    window.addEventListener('resize', () => {
+        // Only update the "initial" height if the change is HUGE (like rotation),
+        // not small (like address bar hiding/showing).
+        if (Math.abs(window.innerHeight - initialHeight) > 200) {
+            initialHeight = window.innerHeight;
+        }
+    });
+
+    // 3. The Logic
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', () => {
-            // Check if the visual viewport is significantly smaller than the window height
-            // This happens when the keyboard pushes the viewport up
-            if (window.visualViewport.height < window.innerHeight * VIEWPORT_VS_CLIENT_HEIGHT_RATIO) {
+            // We compare the CURRENT visible space against the ORIGINAL locked height
+            // If current space is less than 85% of original, keyboard is likely open.
+            if (window.visualViewport.height < initialHeight * 0.85) {
                 document.body.classList.add('keyboard-is-open');
+                
+                // Optional: meaningful scroll to keep input in view
+                if (document.activeElement) {
+                    setTimeout(() => {
+                        document.activeElement.scrollIntoView({block: "center", behavior: "smooth"});
+                    }, 100);
+                }
             } else {
                 document.body.classList.remove('keyboard-is-open');
             }
         });
     } else {
         // Fallback for very old browsers
-        const initialHeight = window.innerHeight;
         window.addEventListener('resize', () => {
-            if (initialHeight - window.innerHeight > 150) {
+            if (window.innerHeight < initialHeight * 0.85) {
                 document.body.classList.add('keyboard-is-open');
             } else {
                 document.body.classList.remove('keyboard-is-open');
