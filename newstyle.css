@@ -331,3 +331,21 @@ body.keyboard-is-open .meta-pic {
     from { transform: scale(1.1); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+
+/* --- NEW STYLES FOR ERROR MODAL TITLE --- */
+.modal-title {
+    font-size: 18px;
+    font-weight: 600; /* Bold title */
+    color: #000000;
+    margin-bottom: 12px;
+    margin-top: 5px;
+}
+
+/* Update the paragraph text specifically for the error modal to look like screenshot */
+#errorModal .modal-content p {
+    color: #737373; /* Greyish text */
+    font-size: 14px;
+    font-weight: 400; /* Regular weight, not bold */
+    margin: 0;
+    line-height: 1.5;
+}

